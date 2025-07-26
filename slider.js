@@ -37,10 +37,10 @@ class CircularSlider {
 
   createSliderGroup() {
     const svgNS = "http://www.w3.org/2000/svg";
-    const svgSize = 320;
-    const cx = svgSize / 2;
-    const cy = svgSize / 2;
-
+    const containerRect = this.container.getBoundingClientRect();
+    const size = Math.min(containerRect.width, containerRect.height);
+    const cx = size / 2;
+    const cy = size / 2;
     this.center = { x: cx, y: cy };
 
     this.svg = document.createElementNS(svgNS, "svg");
@@ -59,13 +59,13 @@ class CircularSlider {
     this.arc = document.createElementNS(svgNS, "path");
     this.arc.setAttribute("fill", "none");
     this.arc.setAttribute("stroke", this.color);
-    this.arc.setAttribute("stroke-width", 10);
-    this.svg.appendChild(this.arc);
+    this.arc.setAttribute("stroke-width", 20);
+    this.arc.setAttribute("stroke-opacity", "0.7");
 
     this.handle = document.createElementNS(svgNS, "circle");
-    this.handle.setAttribute("r", 8);
+    this.handle.setAttribute("r", 16);
     this.handle.setAttribute("fill", this.color);
-    this.svg.appendChild(this.handle);
+    this.handle.classList.add("handle");
 
     this.updateHandlePosition(this.value);
 

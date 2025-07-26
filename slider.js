@@ -216,12 +216,17 @@ class CircularSlider {
   }
 
   getAngleFromEvent(e) {
-    const { clientX, clientY } = e.touches ? e.touches[0] : e;
-    const rect = this.container.getBoundingClientRect();
-    const x = clientX - rect.left - this.center.x;
-    const y = clientY - rect.top - this.center.y;
-    return Math.atan2(y, x);
-  }
+  const pt = this.svg.createSVGPoint();
+  pt.x = e.touches ? e.touches[0].clientX : e.clientX;
+  pt.y = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse());
+
+  const dx = svgP.x - this.center.x;
+  const dy = svgP.y - this.center.y;
+
+  return Math.atan2(dy, dx);
+}
 
   angleToValue(angle) {
     const degrees = (angle * 180) / Math.PI;

@@ -154,6 +154,14 @@ class CircularSlider {
     this.arc.setAttribute("d", arcPath);
   }
 
+  getAngleFromEvent(e) {
+    const { clientX, clientY } = e.touches ? e.touches[0] : e;
+    const rect = this.container.getBoundingClientRect();
+    const x = clientX - rect.left - this.center.x;
+    const y = clientY - rect.top - this.center.y;
+    return Math.atan2(y, x);
+  }
+
   polarToCartesian(cx, cy, r, angleInDegrees) {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {

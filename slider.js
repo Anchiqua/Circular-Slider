@@ -78,11 +78,10 @@ class CircularSlider {
 
   startDrag(e) {
     e.preventDefault();
-    this.dragging = true;
-    window.addEventListener("mousemove", this.onDrag);
-    window.addEventListener("mouseup", this.stopDrag);
-    window.addEventListener("touchmove", this.onDrag, { passive: false });
-    window.addEventListener("touchend", this.stopDrag);
+    document.addEventListener("mousemove", this._boundOnDrag);
+    document.addEventListener("mouseup", this._boundStopDrag);
+    document.addEventListener("touchmove", this._boundOnDrag, { passive: false });
+    document.addEventListener("touchend", this._boundStopDrag);
   }
 
   onDrag = (e) => {
@@ -112,13 +111,12 @@ class CircularSlider {
     this.updateHandlePosition(value);
   };
 
-  stopDrag = () => {
-    this.dragging = false;
-    window.removeEventListener("mousemove", this.onDrag);
-    window.removeEventListener("mouseup", this.stopDrag);
-    window.removeEventListener("touchmove", this.onDrag);
-    window.removeEventListener("touchend", this.stopDrag);
-  };
+  stopDrag() {
+    document.removeEventListener("mousemove", this._boundOnDrag);
+    document.removeEventListener("mouseup", this._boundStopDrag);
+    document.removeEventListener("touchmove", this._boundOnDrag);
+    document.removeEventListener("touchend", this._boundStopDrag);
+  }
 
   handleClick(e) {
     this.angle = this.getAngleFromEvent(e);

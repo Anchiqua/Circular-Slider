@@ -16,7 +16,26 @@ class CircularSlider {
     // Create or reuse shared SVG
     this.svg = this.getOrCreateSVG(this.container);
 
+    // Create or reuse value container
+    this.valueContainer = this.getOrCreateValueContainer(this.container);
+
+
     this.createSliderGroup();
+  }
+
+  getOrCreateValueContainer(container) {
+    let valueDiv = container.querySelector(".value-display-container");
+    if (!valueDiv) {
+      valueDiv = document.createElement("div");
+      valueDiv.classList.add("value-display-container");
+      valueDiv.style.display = "flex";
+      valueDiv.style.flexWrap = "wrap";
+      valueDiv.style.justifyContent = "center";
+      valueDiv.style.gap = "0.5rem";
+      valueDiv.style.marginTop = "0.5rem";
+      container.appendChild(valueDiv);
+    }
+    return valueDiv;
   }
 
   getOrCreateSVG(container) {

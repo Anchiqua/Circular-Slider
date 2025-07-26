@@ -9,7 +9,32 @@ class CircularSlider {
     this.radius = options.radius || 100;
     this.value = this.min;
     this.angle = -Math.PI / 2;
+    
+    // Create or reuse shared SVG
+    this.svg = this.getOrCreateSVG(this.container);
+
     this.createSliderGroup();
+  }
+
+  getOrCreateSVG(container) {
+    let svg = container.querySelector("svg");
+    if (!svg) {
+      svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const rect = container.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height) || 320;
+      svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("height", "100%");
+
+      container.appendChild(svg);
+    } else {
+      const rect = container.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height) || 320;
+      svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+    }
+    return svg;
+  }
+
   createSliderGroup() {
     const svgNS = "http://www.w3.org/2000/svg";
     const svgSize = 320;

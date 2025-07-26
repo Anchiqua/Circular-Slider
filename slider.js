@@ -9,7 +9,10 @@ class CircularSlider {
     this.radius = options.radius || 100;
     this.value = this.min;
     this.angle = -Math.PI / 2;
-    
+
+    this._boundOnDrag = this.onDrag.bind(this);
+    this._boundStopDrag = this.stopDrag.bind(this);
+
     // Create or reuse shared SVG
     this.svg = this.getOrCreateSVG(this.container);
 

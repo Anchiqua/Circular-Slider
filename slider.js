@@ -6,7 +6,7 @@ class CircularSlider {
     this.min = options.min || 0;
     this.max = options.max || 100;
     this.step = options.step || 1;
-    this.radius = options.radius || 100;
+    this.radius = options.radius;
     this.value = this.min;
     this.angle = -Math.PI / 2;
 

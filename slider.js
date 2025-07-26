@@ -84,32 +84,12 @@ class CircularSlider {
     document.addEventListener("touchend", this._boundStopDrag);
   }
 
-  onDrag = (e) => {
-    if (!this.dragging) return;
+  onDrag(e) {
     e.preventDefault();
-
-    let clientX, clientY;
-    if (e.touches && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-
-    const rect = this.svg.getBoundingClientRect();
-    const dx = clientX - (rect.left + this.center.x);
-    const dy = clientY - (rect.top + this.center.y);
-
-    let angle = Math.atan2(dy, dx);
-    let angleDeg = angle * (180 / Math.PI);
-    if (angleDeg < 0) angleDeg += 360;
-    this.angle = (angleDeg * Math.PI) / 180;
-
-    const value = this.angleToValue(this.angle);
-    this.value = value;
-    this.updateHandlePosition(value);
-  };
+    this.angle = this.getAngleFromEvent(e);
+    this.value = this.angleToValue(this.angle);
+    this.updateHandlePosition(this.value);
+  }
 
   stopDrag() {
     document.removeEventListener("mousemove", this._boundOnDrag);

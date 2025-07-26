@@ -9,10 +9,8 @@ class CircularSlider {
     this.radius = options.radius || 100;
     this.value = this.min;
     this.angle = -Math.PI / 2;
-    this.drawSlider();
-  }
-
-  drawSlider() {
+    this.createSliderGroup();
+  createSliderGroup() {
     const svgNS = "http://www.w3.org/2000/svg";
     const svgSize = 320;
     const cx = svgSize / 2;

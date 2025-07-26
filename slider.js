@@ -128,20 +128,22 @@ class CircularSlider {
 
     this.svg.appendChild(defs);
 
+    const strokeWidth = Math.max(6, Math.min(this.container.offsetWidth * 0.03, this.container.offsetHeight * 0.03, 25)); 
+
     this.track = document.createElementNS(svgNS, "circle");
     this.track.setAttribute("cx", cx);
     this.track.setAttribute("cy", cy);
     this.track.setAttribute("r", this.radius);
     this.track.setAttribute("fill", "none");
     this.track.setAttribute("stroke", `url(#${gradientId})`);
-    this.track.setAttribute("stroke-width", 20);
+    this.track.setAttribute("stroke-width", strokeWidth);
     this.track.setAttribute("filter", `url(#${filterId})`);
     this.group.appendChild(this.track);
 
     this.arc = document.createElementNS(svgNS, "path");
     this.arc.setAttribute("fill", "none");
     this.arc.setAttribute("stroke", this.color);
-    this.arc.setAttribute("stroke-width", 20);
+    this.arc.setAttribute("stroke-width", strokeWidth);
     this.arc.setAttribute("stroke-opacity", "0.7");
     this.group.appendChild(this.arc);
 

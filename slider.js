@@ -32,6 +32,8 @@ class CircularSlider {
     const widthCh = maxChars + 1;
     this.valueDisplay.style.width = `${widthCh}ch`;
     this.valueDisplay.style.textAlign = 'right';
+
+    this.valueDisplay.innerText = this.value;
     this.valueContainer.appendChild(this.valueDisplay);
 
     this.createSliderGroup();
@@ -192,6 +194,7 @@ class CircularSlider {
     this.handle.setAttribute("cx", x);
     this.handle.setAttribute("cy", y);
     this.updateArc(value);
+    this.valueDisplay.innerText = value;
   }
 
   updateArc(value) {

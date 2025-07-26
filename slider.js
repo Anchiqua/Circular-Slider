@@ -49,11 +49,58 @@ class CircularSlider {
     this.group = document.createElementNS(svgNS, "g");
     this.svg.appendChild(this.group);
 
-    this.track = document.createElementNS(svgNS, "path");
+    const uniqueId = `slider-${Math.random().toString(36).substring(2, 10)}`;
+    const gradientId = `trackGradient-${uniqueId}`;
+    const filterId = `glow-${uniqueId}`;
+
+    const defs = document.createElementNS(svgNS, "defs");
+
+    const gradient = document.createElementNS(svgNS, "linearGradient");
+    gradient.setAttribute("id", gradientId);
+    gradient.setAttribute("x1", "0%");
+    gradient.setAttribute("y1", "0%");
+    gradient.setAttribute("x2", "100%");
+    gradient.setAttribute("y2", "100%");
+
+    const stop1 = document.createElementNS(svgNS, "stop");
+    stop1.setAttribute("offset", "0%");
+    stop1.setAttribute("stop-color", "#eee");
+    const stop2 = document.createElementNS(svgNS, "stop");
+    stop2.setAttribute("offset", "100%");
+    stop2.setAttribute("stop-color", "#ccc");
+
+    gradient.appendChild(stop1);
+    gradient.appendChild(stop2);
+    defs.appendChild(gradient);
+
+    const filter = document.createElementNS(svgNS, "filter");
+    filter.setAttribute("id", filterId);
+    filter.setAttribute("x", "-50%");
+    filter.setAttribute("y", "-50%");
+    filter.setAttribute("width", "200%");
+    filter.setAttribute("height", "200%");
+
+    const feDropShadow = document.createElementNS(svgNS, "feDropShadow");
+    feDropShadow.setAttribute("dx", "0");
+    feDropShadow.setAttribute("dy", "0");
+    feDropShadow.setAttribute("stdDeviation", "3");
+    feDropShadow.setAttribute("flood-color", "#bbb");
+    feDropShadow.setAttribute("flood-opacity", "0.4");
+
+    filter.appendChild(feDropShadow);
+    defs.appendChild(filter);
+
+    this.svg.appendChild(defs);
+
+    this.track = document.createElementNS(svgNS, "circle");
+    this.track.setAttribute("cx", cx);
+    this.track.setAttribute("cy", cy);
+    this.track.setAttribute("r", this.radius);
     this.track.setAttribute("fill", "none");
-    this.track.setAttribute("stroke", "#ddd");
-    this.track.setAttribute("stroke-width", 10);
-    this.svg.appendChild(this.track);
+    this.track.setAttribute("stroke", `url(#${gradientId})`);
+    this.track.setAttribute("stroke-width", 20);
+    this.track.setAttribute("filter", `url(#${filterId})`);
+    this.group.appendChild(this.track);
 
     this.arc = document.createElementNS(svgNS, "path");
     this.arc.setAttribute("fill", "none");

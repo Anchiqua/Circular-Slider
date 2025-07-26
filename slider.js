@@ -91,10 +91,16 @@ class CircularSlider {
     defs.appendChild(filter);
 
     this.svg.appendChild(defs);
+
+    this.track = document.createElementNS(svgNS, "circle");
+    this.track.setAttribute("cx", cx);
+    this.track.setAttribute("cy", cy);
+    this.track.setAttribute("r", this.radius);
     this.track.setAttribute("fill", "none");
-    this.track.setAttribute("stroke", "#ddd");
-    this.track.setAttribute("stroke-width", 10);
-    this.svg.appendChild(this.track);
+    this.track.setAttribute("stroke", `url(#${gradientId})`);
+    this.track.setAttribute("stroke-width", 20);
+    this.track.setAttribute("filter", `url(#${filterId})`);
+    this.group.appendChild(this.track);
 
     this.arc = document.createElementNS(svgNS, "path");
     this.arc.setAttribute("fill", "none");

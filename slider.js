@@ -117,12 +117,10 @@ class CircularSlider {
     window.removeEventListener("touchend", this.stopDrag);
   };
 
-  angleToValue(angle) {
-    const degrees = (angle * 180) / Math.PI;
-    const normalized = (degrees + 360 + 90) % 360;
-    const range = this.max - this.min;
-    const raw = (normalized / 360) * range + this.min;
-    return Math.round(raw / this.step) * this.step;
+  handleClick(e) {
+    this.angle = this.getAngleFromEvent(e);
+    this.value = this.angleToValue(this.angle);
+    this.updateHandlePosition(this.value);
   }
 
   updateHandlePosition(value) {

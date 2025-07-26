@@ -6,7 +6,7 @@ class CircularSlider {
     this.min = options.min || 0;
     this.max = options.max || 100;
     this.step = options.step || 1;
-    this.radius = options.radius || 100;
+    this.radius = options.radius;
     this.value = this.min;
     this.angle = -Math.PI / 2;
 
@@ -23,15 +23,16 @@ class CircularSlider {
     // Create and add value display to value container
     this.valueDisplay = document.createElement('div');
     this.valueDisplay.style.fontFamily = 'Arial, sans-serif';
-    this.valueDisplay.style.fontSize = '1.6rem';
+    this.valueDisplay.style.fontSize = '3rem';
     this.valueDisplay.style.fontWeight = 'bold';
     this.valueDisplay.style.color = this.color;
-    this.valueDisplay.style.marginBottom = '8px';
+    this.valueDisplay.style.marginBottom = '5px';
 
     const maxChars = options.max.toString().length;
     const widthCh = maxChars + 1;
+
     this.valueDisplay.style.width = `${widthCh}ch`;
-    this.valueDisplay.style.textAlign = 'right';
+    this.valueDisplay.style.textAlign = 'center';
 
     this.valueDisplay.innerText = this.value;
     this.valueContainer.appendChild(this.valueDisplay);
@@ -47,7 +48,7 @@ class CircularSlider {
       valueDiv.style.display = "flex";
       valueDiv.style.flexWrap = "wrap";
       valueDiv.style.justifyContent = "center";
-      valueDiv.style.gap = "0.5rem";
+      valueDiv.style.gap = "2.5rem";
       valueDiv.style.marginTop = "0.5rem";
       container.appendChild(valueDiv);
     }
@@ -127,25 +128,28 @@ class CircularSlider {
 
     this.svg.appendChild(defs);
 
+    const strokeWidth = Math.max(6, Math.min(this.container.offsetWidth * 0.03, this.container.offsetHeight * 0.03, 25)); 
+
     this.track = document.createElementNS(svgNS, "circle");
     this.track.setAttribute("cx", cx);
     this.track.setAttribute("cy", cy);
     this.track.setAttribute("r", this.radius);
     this.track.setAttribute("fill", "none");
     this.track.setAttribute("stroke", `url(#${gradientId})`);
-    this.track.setAttribute("stroke-width", 20);
+    this.track.setAttribute("stroke-width", strokeWidth);
     this.track.setAttribute("filter", `url(#${filterId})`);
     this.group.appendChild(this.track);
 
     this.arc = document.createElementNS(svgNS, "path");
     this.arc.setAttribute("fill", "none");
     this.arc.setAttribute("stroke", this.color);
-    this.arc.setAttribute("stroke-width", 20);
+    this.arc.setAttribute("stroke-width", strokeWidth);
     this.arc.setAttribute("stroke-opacity", "0.7");
     this.group.appendChild(this.arc);
 
     this.handle = document.createElementNS(svgNS, "circle");
-    this.handle.setAttribute("r", 16);
+    const handleSize = Math.max(8, Math.min(this.container.offsetWidth * 0.03, this.container.offsetHeight * 0.03, 30)); 
+    this.handle.setAttribute("r", handleSize);
     this.handle.setAttribute("fill", this.color);
     this.handle.classList.add("handle");
     this.group.appendChild(this.handle);

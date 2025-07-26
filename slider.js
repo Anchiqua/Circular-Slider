@@ -43,12 +43,8 @@ class CircularSlider {
     const cy = size / 2;
     this.center = { x: cx, y: cy };
 
-    this.svg = document.createElementNS(svgNS, "svg");
-    this.svg.setAttribute("width", svgSize);
-    this.svg.setAttribute("height", svgSize);
-    this.svg.style.position = "absolute";
-    this.container.appendChild(this.svg);
-
+    this.group = document.createElementNS(svgNS, "g");
+    this.svg.appendChild(this.group);
 
     this.track = document.createElementNS(svgNS, "path");
     this.track.setAttribute("fill", "none");
@@ -61,11 +57,13 @@ class CircularSlider {
     this.arc.setAttribute("stroke", this.color);
     this.arc.setAttribute("stroke-width", 20);
     this.arc.setAttribute("stroke-opacity", "0.7");
+    this.group.appendChild(this.arc);
 
     this.handle = document.createElementNS(svgNS, "circle");
     this.handle.setAttribute("r", 16);
     this.handle.setAttribute("fill", this.color);
     this.handle.classList.add("handle");
+    this.group.appendChild(this.handle);
 
     this.updateHandlePosition(this.value);
 

@@ -148,7 +148,8 @@ class CircularSlider {
     this.group.appendChild(this.arc);
 
     this.handle = document.createElementNS(svgNS, "circle");
-    this.handle.setAttribute("r", 16);
+    const handleSize = Math.max(8, Math.min(this.container.offsetWidth * 0.03, this.container.offsetHeight * 0.03, 30)); 
+    this.handle.setAttribute("r", handleSize);
     this.handle.setAttribute("fill", this.color);
     this.handle.classList.add("handle");
     this.group.appendChild(this.handle);

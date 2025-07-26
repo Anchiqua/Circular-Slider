@@ -23,15 +23,16 @@ class CircularSlider {
     // Create and add value display to value container
     this.valueDisplay = document.createElement('div');
     this.valueDisplay.style.fontFamily = 'Arial, sans-serif';
-    this.valueDisplay.style.fontSize = '1.6rem';
+    this.valueDisplay.style.fontSize = '3rem';
     this.valueDisplay.style.fontWeight = 'bold';
     this.valueDisplay.style.color = this.color;
-    this.valueDisplay.style.marginBottom = '8px';
+    this.valueDisplay.style.marginBottom = '5px';
 
     const maxChars = options.max.toString().length;
     const widthCh = maxChars + 1;
+
     this.valueDisplay.style.width = `${widthCh}ch`;
-    this.valueDisplay.style.textAlign = 'right';
+    this.valueDisplay.style.textAlign = 'center';
 
     this.valueDisplay.innerText = this.value;
     this.valueContainer.appendChild(this.valueDisplay);
@@ -47,7 +48,7 @@ class CircularSlider {
       valueDiv.style.display = "flex";
       valueDiv.style.flexWrap = "wrap";
       valueDiv.style.justifyContent = "center";
-      valueDiv.style.gap = "0.5rem";
+      valueDiv.style.gap = "2.5rem";
       valueDiv.style.marginTop = "0.5rem";
       container.appendChild(valueDiv);
     }

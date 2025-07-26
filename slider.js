@@ -13,6 +13,8 @@ class CircularSlider {
     this._boundOnDrag = this.onDrag.bind(this);
     this._boundStopDrag = this.stopDrag.bind(this);
 
+    this.containerRect = this.container.getBoundingClientRect();
+    
     // Create or reuse shared SVG
     this.svg = this.getOrCreateSVG(this.container);
 
@@ -57,18 +59,12 @@ class CircularSlider {
 
   getOrCreateSVG(container) {
     let svg = container.querySelector("svg");
+    const size = Math.min(this.containerRect.width, this.containerRect.height);
     if (!svg) {
       svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      const rect = container.getBoundingClientRect();
-      const size = Math.min(rect.width, rect.height) || 320;
       svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
-      svg.setAttribute("width", "100%");
-      svg.setAttribute("height", "100%");
-
       container.appendChild(svg);
     } else {
-      const rect = container.getBoundingClientRect();
-      const size = Math.min(rect.width, rect.height) || 320;
       svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
     }
     return svg;
@@ -76,8 +72,7 @@ class CircularSlider {
 
   createSliderGroup() {
     const svgNS = "http://www.w3.org/2000/svg";
-    const containerRect = this.container.getBoundingClientRect();
-    const size = Math.min(containerRect.width, containerRect.height);
+    const size = Math.min(this.containerRect.width, this.containerRect.height);
     const cx = size / 2;
     const cy = size / 2;
     this.center = { x: cx, y: cy };
@@ -202,31 +197,54 @@ class CircularSlider {
   }
 
   updateArc(value) {
-    const startAngle = 0;
-    const endAngle = ((value - this.min) / (this.max - this.min)) * 360;
-    const r = this.radius;
-    const cx = this.center.x;
-    const cy = this.center.y;
+  const range = this.max - this.min;
+  const progress = (value - this.min) / range;
+  const r = this.radius;
+  const cx = this.center.x;
+  const cy = this.center.y;
 
-    const start = this.polarToCartesian(cx, cy, r, endAngle);
-    const end = this.polarToCartesian(cx, cy, r, startAngle);
-    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-
-    const arcPath = [
-      "M", end.x, end.y,
-      "A", r, r, 0, largeArc, 1, start.x, start.y
+  if (progress >= 1) {
+    const d = [
+      "M", cx + r, cy,
+      "A", r, r, 0, 1, 1, cx - r, cy,
+      "A", r, r, 0, 1, 1, cx + r, cy
     ].join(" ");
-
-    this.arc.setAttribute("d", arcPath);
+    this.arc.setAttribute("d", d);
+    return;
   }
+
+  if (progress <= 0) {
+    this.arc.setAttribute("d", "");
+    return;
+  }
+
+  const startAngle = 0;
+  const endAngle = progress * 360;
+
+  const start = this.polarToCartesian(cx, cy, r, endAngle);
+  const end = this.polarToCartesian(cx, cy, r, startAngle);
+  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+  const d = [
+    "M", end.x, end.y,
+    "A", r, r, 0, largeArc, 1, start.x, start.y
+  ].join(" ");
+
+  this.arc.setAttribute("d", d);
+}
 
   getAngleFromEvent(e) {
-    const { clientX, clientY } = e.touches ? e.touches[0] : e;
-    const rect = this.container.getBoundingClientRect();
-    const x = clientX - rect.left - this.center.x;
-    const y = clientY - rect.top - this.center.y;
-    return Math.atan2(y, x);
-  }
+  const pt = this.svg.createSVGPoint();
+  pt.x = e.touches ? e.touches[0].clientX : e.clientX;
+  pt.y = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse());
+
+  const dx = svgP.x - this.center.x;
+  const dy = svgP.y - this.center.y;
+
+  return Math.atan2(dy, dx);
+}
 
   angleToValue(angle) {
     const degrees = (angle * 180) / Math.PI;

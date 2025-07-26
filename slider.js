@@ -69,18 +69,8 @@ class CircularSlider {
 
     this.handle.addEventListener("mousedown", (e) => this.startDrag(e));
     this.handle.addEventListener("touchstart", (e) => this.startDrag(e), { passive: false });
-
-    this.svg.addEventListener("click", (e) => this.handleClick(e));
-  }
-
-  handleClick(e) {
-    const rect = this.svg.getBoundingClientRect();
-    const x = e.clientX - rect.left - this.center.x;
-    const y = e.clientY - rect.top - this.center.y;
-    const angle = Math.atan2(y, x);
-    const value = this.angleToValue(angle);
-    this.value = value;
-    this.updateHandlePosition(value);
+    this.track.addEventListener("click", (e) => this.handleClick(e));
+    this.arc.addEventListener("click", (e) => this.handleClick(e));
   }
 
   startDrag(e) {

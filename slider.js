@@ -173,8 +173,8 @@ class CircularSlider {
   polarToCartesian(cx, cy, r, angleInDegrees) {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {
-      x: cx + r * Math.cos(angleInRadians),
-      y: cy + r * Math.sin(angleInRadians),
+      x: cx + (r * Math.cos(angleInRadians)),
+      y: cy + (r * Math.sin(angleInRadians)),
     };
   }
 }

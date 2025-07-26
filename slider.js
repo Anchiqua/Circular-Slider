@@ -9,23 +9,45 @@ class CircularSlider {
     this.radius = options.radius || 100;
     this.value = this.min;
     this.angle = -Math.PI / 2;
-    this.drawSlider();
+
+    this._boundOnDrag = this.onDrag.bind(this);
+    this._boundStopDrag = this.stopDrag.bind(this);
+
+    // Create or reuse shared SVG
+    this.svg = this.getOrCreateSVG(this.container);
+
+    this.createSliderGroup();
   }
 
-  drawSlider() {
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svgSize = 320;
-    const cx = svgSize / 2;
-    const cy = svgSize / 2;
+  getOrCreateSVG(container) {
+    let svg = container.querySelector("svg");
+    if (!svg) {
+      svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const rect = container.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height) || 320;
+      svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("height", "100%");
 
+      container.appendChild(svg);
+    } else {
+      const rect = container.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height) || 320;
+      svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+    }
+    return svg;
+  }
+
+  createSliderGroup() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const containerRect = this.container.getBoundingClientRect();
+    const size = Math.min(containerRect.width, containerRect.height);
+    const cx = size / 2;
+    const cy = size / 2;
     this.center = { x: cx, y: cy };
 
-    this.svg = document.createElementNS(svgNS, "svg");
-    this.svg.setAttribute("width", svgSize);
-    this.svg.setAttribute("height", svgSize);
-    this.svg.style.position = "absolute";
-    this.container.appendChild(this.svg);
-
+    this.group = document.createElementNS(svgNS, "g");
+    this.svg.appendChild(this.group);
 
     this.track = document.createElementNS(svgNS, "path");
     this.track.setAttribute("fill", "none");
@@ -36,89 +58,57 @@ class CircularSlider {
     this.arc = document.createElementNS(svgNS, "path");
     this.arc.setAttribute("fill", "none");
     this.arc.setAttribute("stroke", this.color);
-    this.arc.setAttribute("stroke-width", 10);
-    this.svg.appendChild(this.arc);
+    this.arc.setAttribute("stroke-width", 20);
+    this.arc.setAttribute("stroke-opacity", "0.7");
+    this.group.appendChild(this.arc);
 
     this.handle = document.createElementNS(svgNS, "circle");
-    this.handle.setAttribute("r", 8);
+    this.handle.setAttribute("r", 16);
     this.handle.setAttribute("fill", this.color);
-    this.svg.appendChild(this.handle);
+    this.handle.classList.add("handle");
+    this.group.appendChild(this.handle);
 
     this.updateHandlePosition(this.value);
 
     this.handle.addEventListener("mousedown", (e) => this.startDrag(e));
     this.handle.addEventListener("touchstart", (e) => this.startDrag(e), { passive: false });
-
-    this.svg.addEventListener("click", (e) => this.handleClick(e));
-  }
-
-  handleClick(e) {
-    const rect = this.svg.getBoundingClientRect();
-    const x = e.clientX - rect.left - this.center.x;
-    const y = e.clientY - rect.top - this.center.y;
-    const angle = Math.atan2(y, x);
-    const value = this.angleToValue(angle);
-    this.value = value;
-    this.updateHandlePosition(value);
+    this.track.addEventListener("click", (e) => this.handleClick(e));
+    this.arc.addEventListener("click", (e) => this.handleClick(e));
   }
 
   startDrag(e) {
     e.preventDefault();
-    this.dragging = true;
-    window.addEventListener("mousemove", this.onDrag);
-    window.addEventListener("mouseup", this.stopDrag);
-    window.addEventListener("touchmove", this.onDrag, { passive: false });
-    window.addEventListener("touchend", this.stopDrag);
+    document.addEventListener("mousemove", this._boundOnDrag);
+    document.addEventListener("mouseup", this._boundStopDrag);
+    document.addEventListener("touchmove", this._boundOnDrag, { passive: false });
+    document.addEventListener("touchend", this._boundStopDrag);
   }
 
-  onDrag = (e) => {
-    if (!this.dragging) return;
+  onDrag(e) {
     e.preventDefault();
+    this.angle = this.getAngleFromEvent(e);
+    this.value = this.angleToValue(this.angle);
+    this.updateHandlePosition(this.value);
+  }
 
-    let clientX, clientY;
-    if (e.touches && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
+  stopDrag() {
+    document.removeEventListener("mousemove", this._boundOnDrag);
+    document.removeEventListener("mouseup", this._boundStopDrag);
+    document.removeEventListener("touchmove", this._boundOnDrag);
+    document.removeEventListener("touchend", this._boundStopDrag);
+  }
 
-    const rect = this.svg.getBoundingClientRect();
-    const dx = clientX - (rect.left + this.center.x);
-    const dy = clientY - (rect.top + this.center.y);
-
-    let angle = Math.atan2(dy, dx);
-    let angleDeg = angle * (180 / Math.PI);
-    if (angleDeg < 0) angleDeg += 360;
-    this.angle = (angleDeg * Math.PI) / 180;
-
-    const value = this.angleToValue(this.angle);
-    this.value = value;
-    this.updateHandlePosition(value);
-  };
-
-  stopDrag = () => {
-    this.dragging = false;
-    window.removeEventListener("mousemove", this.onDrag);
-    window.removeEventListener("mouseup", this.stopDrag);
-    window.removeEventListener("touchmove", this.onDrag);
-    window.removeEventListener("touchend", this.stopDrag);
-  };
-
-  angleToValue(angle) {
-    const degrees = (angle * 180) / Math.PI;
-    const normalized = (degrees + 360 + 90) % 360;
-    const range = this.max - this.min;
-    const raw = (normalized / 360) * range + this.min;
-    return Math.round(raw / this.step) * this.step;
+  handleClick(e) {
+    this.angle = this.getAngleFromEvent(e);
+    this.value = this.angleToValue(this.angle);
+    this.updateHandlePosition(this.value);
   }
 
   updateHandlePosition(value) {
     const angle = ((value - this.min) / (this.max - this.min)) * 2 * Math.PI;
-    const adjustedAngle = angle - Math.PI / 2;
-    const x = this.center.x + this.radius * Math.cos(adjustedAngle);
-    const y = this.center.y + this.radius * Math.sin(adjustedAngle);
+    const adjustedAngle = angle - (Math.PI / 2);
+    const x = this.center.x + (this.radius * Math.cos(adjustedAngle));
+    const y = this.center.y + (this.radius * Math.sin(adjustedAngle));
     this.handle.setAttribute("cx", x);
     this.handle.setAttribute("cy", y);
     this.updateArc(value);
@@ -143,11 +133,27 @@ class CircularSlider {
     this.arc.setAttribute("d", arcPath);
   }
 
+  getAngleFromEvent(e) {
+    const { clientX, clientY } = e.touches ? e.touches[0] : e;
+    const rect = this.container.getBoundingClientRect();
+    const x = clientX - rect.left - this.center.x;
+    const y = clientY - rect.top - this.center.y;
+    return Math.atan2(y, x);
+  }
+
+  angleToValue(angle) {
+    const degrees = (angle * 180) / Math.PI;
+    const normalized = (degrees + 360 + 90) % 360;
+    const range = this.max - this.min;
+    const raw = (normalized / 360) * range + this.min;
+    return Math.round(raw / this.step) * this.step;
+  }
+
   polarToCartesian(cx, cy, r, angleInDegrees) {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {
-      x: cx + r * Math.cos(angleInRadians),
-      y: cy + r * Math.sin(angleInRadians),
+      x: cx + (r * Math.cos(angleInRadians)),
+      y: cy + (r * Math.sin(angleInRadians)),
     };
   }
 }

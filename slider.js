@@ -162,6 +162,14 @@ class CircularSlider {
     return Math.atan2(y, x);
   }
 
+  angleToValue(angle) {
+    const degrees = (angle * 180) / Math.PI;
+    const normalized = (degrees + 360 + 90) % 360;
+    const range = this.max - this.min;
+    const raw = (normalized / 360) * range + this.min;
+    return Math.round(raw / this.step) * this.step;
+  }
+
   polarToCartesian(cx, cy, r, angleInDegrees) {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {

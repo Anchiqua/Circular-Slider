@@ -16,7 +16,42 @@ class CircularSlider {
     // Create or reuse shared SVG
     this.svg = this.getOrCreateSVG(this.container);
 
+    // Create or reuse value container
+    this.valueContainer = this.getOrCreateValueContainer(this.container);
+
+
+    // Create and add value display to value container
+    this.valueDisplay = document.createElement('div');
+    this.valueDisplay.style.fontFamily = 'Arial, sans-serif';
+    this.valueDisplay.style.fontSize = '1.6rem';
+    this.valueDisplay.style.fontWeight = 'bold';
+    this.valueDisplay.style.color = this.color;
+    this.valueDisplay.style.marginBottom = '8px';
+
+    const maxChars = options.max.toString().length;
+    const widthCh = maxChars + 1;
+    this.valueDisplay.style.width = `${widthCh}ch`;
+    this.valueDisplay.style.textAlign = 'right';
+
+    this.valueDisplay.innerText = this.value;
+    this.valueContainer.appendChild(this.valueDisplay);
+
     this.createSliderGroup();
+  }
+
+  getOrCreateValueContainer(container) {
+    let valueDiv = container.querySelector(".value-display-container");
+    if (!valueDiv) {
+      valueDiv = document.createElement("div");
+      valueDiv.classList.add("value-display-container");
+      valueDiv.style.display = "flex";
+      valueDiv.style.flexWrap = "wrap";
+      valueDiv.style.justifyContent = "center";
+      valueDiv.style.gap = "0.5rem";
+      valueDiv.style.marginTop = "0.5rem";
+      container.appendChild(valueDiv);
+    }
+    return valueDiv;
   }
 
   getOrCreateSVG(container) {
@@ -159,6 +194,7 @@ class CircularSlider {
     this.handle.setAttribute("cx", x);
     this.handle.setAttribute("cy", y);
     this.updateArc(value);
+    this.valueDisplay.innerText = value;
   }
 
   updateArc(value) {

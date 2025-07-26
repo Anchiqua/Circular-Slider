@@ -20,6 +20,15 @@ class CircularSlider {
     this.valueContainer = this.getOrCreateValueContainer(this.container);
 
 
+    // Create and add value display to value container
+    this.valueDisplay = document.createElement('div');
+    this.valueDisplay.style.fontFamily = 'Arial, sans-serif';
+    this.valueDisplay.style.fontSize = '1.6rem';
+    this.valueDisplay.style.fontWeight = 'bold';
+    this.valueDisplay.style.color = this.color;
+    this.valueDisplay.style.marginBottom = '8px';
+    this.valueContainer.appendChild(this.valueDisplay);
+
     this.createSliderGroup();
   }
 

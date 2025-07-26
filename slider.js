@@ -127,9 +127,9 @@ class CircularSlider {
 
   updateHandlePosition(value) {
     const angle = ((value - this.min) / (this.max - this.min)) * 2 * Math.PI;
-    const adjustedAngle = angle - Math.PI / 2;
-    const x = this.center.x + this.radius * Math.cos(adjustedAngle);
-    const y = this.center.y + this.radius * Math.sin(adjustedAngle);
+    const adjustedAngle = angle - (Math.PI / 2);
+    const x = this.center.x + (this.radius * Math.cos(adjustedAngle));
+    const y = this.center.y + (this.radius * Math.sin(adjustedAngle));
     this.handle.setAttribute("cx", x);
     this.handle.setAttribute("cy", y);
     this.updateArc(value);

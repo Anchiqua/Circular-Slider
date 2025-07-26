@@ -13,6 +13,8 @@ class CircularSlider {
     this._boundOnDrag = this.onDrag.bind(this);
     this._boundStopDrag = this.stopDrag.bind(this);
 
+    this.containerRect = this.container.getBoundingClientRect();
+    
     // Create or reuse shared SVG
     this.svg = this.getOrCreateSVG(this.container);
 
@@ -57,18 +59,12 @@ class CircularSlider {
 
   getOrCreateSVG(container) {
     let svg = container.querySelector("svg");
+    const size = Math.min(this.containerRect.width, this.containerRect.height);
     if (!svg) {
       svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      const rect = container.getBoundingClientRect();
-      const size = Math.min(rect.width, rect.height) || 320;
       svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
-      svg.setAttribute("width", "100%");
-      svg.setAttribute("height", "100%");
-
       container.appendChild(svg);
     } else {
-      const rect = container.getBoundingClientRect();
-      const size = Math.min(rect.width, rect.height) || 320;
       svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
     }
     return svg;
@@ -76,8 +72,7 @@ class CircularSlider {
 
   createSliderGroup() {
     const svgNS = "http://www.w3.org/2000/svg";
-    const containerRect = this.container.getBoundingClientRect();
-    const size = Math.min(containerRect.width, containerRect.height);
+    const size = Math.min(this.containerRect.width, this.containerRect.height);
     const cx = size / 2;
     const cy = size / 2;
     this.center = { x: cx, y: cy };

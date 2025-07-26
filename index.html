@@ -1,1 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8" />
+    <title>Circular Slider</title>
+</head>
+
+<body>
+  <div id="slider-wrapper" class="slider-container"></div>
+
+  <script src="slider.js"></script>
+  <script>
+    const wrapper = document.getElementById("slider-wrapper");
+    new CircularSlider({ container: wrapper, color: "#E05246", min: 0, max: 1000, step: 50, radius: 110 });
+  </script>
+</body>
+
+</html>

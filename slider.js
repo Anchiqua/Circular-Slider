@@ -27,6 +27,11 @@ class CircularSlider {
     this.valueDisplay.style.fontWeight = 'bold';
     this.valueDisplay.style.color = this.color;
     this.valueDisplay.style.marginBottom = '8px';
+
+    const maxChars = options.max.toString().length;
+    const widthCh = maxChars + 1;
+    this.valueDisplay.style.width = `${widthCh}ch`;
+    this.valueDisplay.style.textAlign = 'right';
     this.valueContainer.appendChild(this.valueDisplay);
 
     this.createSliderGroup();
